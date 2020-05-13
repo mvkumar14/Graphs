@@ -6,49 +6,130 @@ from util import Stack, Queue  # These may come in handy
 class Graph:
 
     """Represent a graph as a dictionary of vertices mapping labels to edges."""
-    def __init__(self):
-        self.vertices = {}
+    def __init__(self,vertices = {}):
+        self.vertices = vertices
 
     def add_vertex(self, vertex_id):
         """
         Add a vertex to the graph.
         """
-        pass  # TODO
+        self.vertices[vertex_id] = set()
 
     def add_edge(self, v1, v2):
         """
         Add a directed edge to the graph.
         """
-        pass  # TODO
+        try:
+            if self.vertices[v1] or self.vertices[v2]: 
+                # I just need the compiler to check that both exist before I modify either
+                pass
+            self.vertices[v1].add(v2)
+        except KeyError:
+            print('one of the vertexes does not exist')
+        # TODO Make it print the exact vertex that doesn't exist
 
     def get_neighbors(self, vertex_id):
         """
         Get all neighbors (edges) of a vertex.
         """
-        pass  # TODO
+        return self.vertices[vertex_id]
+        
 
     def bft(self, starting_vertex):
         """
         Print each vertex in breadth-first order
         beginning from starting_vertex.
         """
-        pass  # TODO
+        q  = [starting_vertex]
+        seen = [starting_vertex]
+        while len(q)>=1:
+            neighbors = self.get_neighbors(q[0])
+            for i in neighbors:
+                if i in seen:
+                    pass
+                else:
+                    q.append(i)
+                    seen.append(i)
+            del q[0] # can I use pop instead? would it be more efficient?/ pythonic?
+        print(seen)
+        return seen
+        # TODO 
+        # right now this algorithm doesn't scale. A hash table would help it scale
+        # (the seen wouldn't take as long to complete)
+        # The other way to improve this algorithm would be to see
+        # if you can use pointers instead of the pop(0) operation.
+        # if you can then it won't take as long to perform the "pop" from the q
 
     def dft(self, starting_vertex):
         """
         Print each vertex in depth-first order
         beginning from starting_vertex.
         """
-        pass  # TODO
+        stack = [starting_vertex]
+        seen = [starting_vertex]
+        current = starting_vertex
+        output = []
+        while len(stack)>0:
+            current = stack.pop()
+            output.append(current)
+            neighbors = self.get_neighbors(current)
+            for i in neighbors:
+                if i in seen:
+                    pass
+                else:
+                    stack.append(i)
+                    seen.append(i)
+        print(output)
+        return output
+         # TODO refactor/ go over logic again.
 
-    def dft_recursive(self, starting_vertex):
+    def dft_recursive(self, starting_vertex, seen= None):
         """
         Print each vertex in depth-first order
         beginning from starting_vertex.
 
         This should be done using recursion.
         """
-        pass  # TODO
+
+        if seen == None: # first loop?
+            seen = set()
+
+
+        neighbors = self.get_neighbors(starting_vertex)
+        no_new_neighbors = True
+        for i in neighbors:
+            if i in seen:
+                pass
+            else:
+                no_new_neighbors = False
+                break
+
+
+        if no_new_neighbors:
+            return seen, [starting_vertex] # [seen] [output]
+        # if there are no neighbors, or 
+        # if all the neighbors have been seen
+        # return a value to the function above
+
+        # else return the result of calling the d
+        # function on 
+        
+        stack = [starting_vertex]
+        seen.add(starting_vertex)
+        for i in neighbors:
+            if i in seen:
+                pass
+            else:
+                seen.add(i)
+                sub_seen, out = self.dft_recursive(i,seen)
+                seen | sub_seen
+                stack.extend(out)
+
+        print(seen,stack)
+        return seen, stack
+        # TODO second pass on this algorithm to better understand it
+        # track the points in time when the tradeoff of information occurs
+        # between specific calls of the algorithm both down and up.
 
     def bfs(self, starting_vertex, destination_vertex):
         """
@@ -56,6 +137,9 @@ class Graph:
         starting_vertex to destination_vertex in
         breath-first order.
         """
+        # every time you extend teh region of breadth first search
+        # have each node point to a parent. When you hit the thing you are looking
+        # for trace parents to generate sequence.
         pass  # TODO
 
     def dfs(self, starting_vertex, destination_vertex):
@@ -64,6 +148,7 @@ class Graph:
         starting_vertex to destination_vertex in
         depth-first order.
         """
+        # keep following pointers until you hit
         pass  # TODO
 
     def dfs_recursive(self, starting_vertex, destination_vertex):
@@ -74,6 +159,10 @@ class Graph:
 
         This should be done using recursion.
         """
+        # if current == destination
+        # return the sequence
+        # else
+        # traverse the tree on the neighbors you haven't seen.
         pass  # TODO
 
 if __name__ == '__main__':
@@ -128,7 +217,8 @@ if __name__ == '__main__':
         1, 2, 4, 6, 3, 5, 7
     '''
     graph.dft(1)
-    graph.dft_recursive(1)
+    seen,stack  = graph.dft_recursive(1)
+    print(stack)
 
     '''
     Valid BFS path:
