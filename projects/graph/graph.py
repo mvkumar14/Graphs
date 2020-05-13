@@ -1,3 +1,4 @@
+import time
 """
 Simple graph implementation
 """
@@ -140,7 +141,58 @@ class Graph:
         # every time you extend teh region of breadth first search
         # have each node point to a parent. When you hit the thing you are looking
         # for trace parents to generate sequence.
-        pass  # TODO
+
+        nbrs = self.get_neighbors(starting_vertex)
+        dv = destination_vertex
+        q = list(nbrs)
+        parents = {}
+        for i in q:
+            parents[i] = starting_vertex
+        # index = 0
+        while len(q) > 0:
+            current = q.pop(0)
+            children = self.get_neighbors(current)
+            for child in children:
+                if child == dv:
+                    parents[child] = current
+                    q = []
+                    break
+                try:
+                    if parents[child]:
+                        continue
+                except KeyError:
+                    parents[child] = current
+                    q.append(child)            
+            # print(index,q,parents)
+            # index += 1
+            # time.sleep(1)
+        sequence = [dv]
+        current = dv
+        while current != starting_vertex:
+            current = parents[current]
+            sequence.append(current)
+        sequence.reverse()
+        return sequence
+
+
+        # maybe while neighbors isn't empty instead
+        # for i in nbrs:
+            # add its neighbors to the q
+            # for each neighbor make the parent i (in the dictionary)
+            # if one of the neibors is the dv 
+            #     add to parents and break
+            # current = next in q
+            # get rid of first item in q  
+        
+        # outside while
+        # reverse sequence =[]
+        
+        # while parents[dv] != starting_vertex
+        #   parent = parents[dv]
+        #   reverse seq.append(parent)
+            # dv = parent
+        pass
+          # TODO
 
     def dfs(self, starting_vertex, destination_vertex):
         """
@@ -148,10 +200,56 @@ class Graph:
         starting_vertex to destination_vertex in
         depth-first order.
         """
-        # keep following pointers until you hit
+        nbrs = self.get_neighbors(starting_vertex)
+        dv = destination_vertex
+        q = list(nbrs)
+        parents = {}
+        for i in q:
+            parents[i] = starting_vertex
+        # index = 0
+        while len(q) > 0:
+            current = q.pop()
+            children = self.get_neighbors(current)
+            for child in children:
+                if child == dv:
+                    parents[child] = current
+                    q = []
+                    break
+                try:
+                    if parents[child]:
+                        continue
+                except KeyError:
+                    parents[child] = current
+                    q.append(child)            
+            # print(index,q,parents)
+            # index += 1
+            # time.sleep(1)
+        sequence = [dv]
+        current = dv
+        while current != starting_vertex:
+            current = parents[current]
+            sequence.append(current)
+        sequence.reverse()
+        return sequence
+
+        # keep track of current sequence
+        # stack = []
+        # sequence = []
+        # current = starting_vertex
+        # while True:
+        #     if current == destination_vertex:
+                
+        #         break
+        #     nbrs = self.get_neighbors(current)
+            
+        #     stack.extend(nbrs)
+            
+        #     current = stack.pop()
+
+        # 
         pass  # TODO
 
-    def dfs_recursive(self, starting_vertex, destination_vertex):
+    def dfs_recursive(self, starting_vertex, destination_vertex, sequence=None):
         """
         Return a list containing a path from
         starting_vertex to destination_vertex in
@@ -159,11 +257,31 @@ class Graph:
 
         This should be done using recursion.
         """
+        if sequence == None:
+            sequence = [starting_vertex]
+
+        if starting_vertex == destination_vertex:
+            return sequence
+        
+        nbrs = self.get_neighbors(starting_vertex)
+        for nbr in nbrs:
+            if nbr in sequence:
+                continue
+            tmp = sequence + [nbr]
+            val = self.dfs_recursive(nbr,destination_vertex,tmp)
+            # When I finally get a value I need to break out of the 
+            # recursion so my normal case has to recognize that it 
+            # should return the answer upwards
+            # until its out of the recursion.
+            if val == 0:
+                continue
+            else:
+                return val
+        return 0
         # if current == destination
         # return the sequence
         # else
         # traverse the tree on the neighbors you haven't seen.
-        pass  # TODO
 
 if __name__ == '__main__':
     graph = Graph()  # Instantiate your graph
@@ -232,4 +350,5 @@ if __name__ == '__main__':
         [1, 2, 4, 7, 6]
     '''
     print(graph.dfs(1, 6))
-    print(graph.dfs_recursive(1, 6))
+    print('DFS recursive:',graph.dfs_recursive(1, 6))
+    print(list(graph.get_neighbors(1)))
