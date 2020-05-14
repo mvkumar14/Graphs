@@ -1,3 +1,5 @@
+from random import shuffle
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -45,8 +47,23 @@ class SocialGraph:
         # !!!! IMPLEMENT ME
 
         # Add users
-
+        tmp = []
+        for i in range(num_users):
+            tmp.append(self.last_id)
+            name = 'user ' + str(i)
+            self.add_user(name)
+        
         # Create friendships
+        # figure out how to get a better distribution later
+        shuffle(tmp)
+        for i in self.users:
+            shuffle(tmp)
+            for j in tmp[:avg_friendships]:
+                if i<j:
+                    self.add_friendship(i,j)
+            # print(i)
+        
+
 
     def get_all_social_paths(self, user_id):
         """
@@ -58,13 +75,44 @@ class SocialGraph:
         The key is the friend's ID and the value is the path.
         """
         visited = {}  # Note that this is a dictionary, not a set
+        # the dictionary has the format {'friend':'path'} with friend = user id
+        # and path = list with path.
         # !!!! IMPLEMENT ME
+        # a bfs guarantees shortest
+        # if the friend is in visited ( aka if visited.__contains__(id))
+        # then I don't have to travel to that particular place
+        # else travel there, and add path
+
+        # I need a list or a dictionary of branches that lists current pathways?
+        # you can look up your parent, and your parent in the dictionary will 
+        # have the sequence that you have to add to.
+        # this is actually the visited dictionary
+        nbrs = [user_id]
+        nbrs.extend(self.friendships[user_id])
+        current_path = []
+        print(nbrs)
+        visited[user_id] = user_id
+        while len(nbrs)>0: 
+            current = nbrs.pop(0)
+            # if current in visited:# neighbor (current) in seen
+            #    pass
+            # else:
+            current_friends = self.friendships[current]
+            for i in current_friends:
+                if i in visited:
+                    pass
+                else:
+                    if type(visited[current]) is int:
+                        visited[i] = [visited[current]] + [i]
+                    else: # if list:
+                        visited[i] = visited[current] + [i]
+                    nbrs.extend(self.friendships[i])
         return visited
 
 
 if __name__ == '__main__':
     sg = SocialGraph()
-    sg.populate_graph(10, 2)
+    sg.populate_graph(100, 5)
     print(sg.friendships)
     connections = sg.get_all_social_paths(1)
     print(connections)
