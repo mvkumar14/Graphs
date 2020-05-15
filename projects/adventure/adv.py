@@ -1,4 +1,3 @@
-import time
 from room import Room
 from player import Player
 from world import World
@@ -6,8 +5,7 @@ from world import World
 import random
 from ast import literal_eval
 
-
-def inv_direction(direction):
+def inv_direction(d):
     # returns n s opposites and e w opposites
     if d == 'n':
         return 's'
@@ -20,6 +18,13 @@ def inv_direction(direction):
     else:
         print('error invalid direction')
 
+def exits_to_dict(exits_list):
+    # turns the list of exits to a dictionary of ?s
+    out_dict = {}
+    for i in exits_list:
+        out_dict[i] = None
+    return out_dict
+
 # Load world
 world = World()
 
@@ -29,7 +34,13 @@ world = World()
 # map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
-map_file = "maps/main_maze.txt"
+import sys
+import os
+cwd = os.getcwd()
+print(cwd)
+os.chdir('G:\\Data\\Lambda\\CS\\Graphs\\projects\\adventure')
+sys.path.append('G:\\Data\\Lambda\\CS\\Graphs\\projects\\adventure')
+map_file = "test_loop_fork.txt"
 
 # Loads the map into a dictionary
 room_graph=literal_eval(open(map_file, "r").read())
@@ -44,62 +55,26 @@ player = Player(world.starting_room)
 # traversal_path = ['n', 'n']
 traversal_path = []
 
-# things to do in search loop
-# move
-# I have to add directions to traversal path
-# get id
-# update old room
-# add current room (if not added yet) to the
-# dictionary of rooms
-total_rooms = len(world.rooms)
-print("total rooms:",total_rooms)
+#depth first tree.
+stack = [player.current_room]
+seen = [player.current_room.id]
+current = player.current_room.id
 
-all_visited  = []
-my_room_graph = {}
-while len(all_visited) < 500:
-    rmid = player.current_room.id
-    rmexits = player.current_room.get_exits()
-
-    # I have to change rmexits into dictionary format
-    # and have all the keys be ? if its a brand new room
-
-    # move the starting to before the loop starts. 
-    if my_room_graph.__contains__(rmid):
-        pass
-    else:
-        my_room_graph[rmid] = rmexits
-    
-    print(my_room_graph)
-    
-    if rmid in all_visited:
-        pass
-    else:
-        all_visited.append(rmid)
-
-    # choose a direction to travel in:
-    random.sample()
-
-    player.travel(direction)
-    traversal_path.append(direction)
-    new_rmid = player.current_room.id
-    my_room_graph[rmid][direction] = new_rmid
-    if my_room_graph.__contains__(new_rmid):    
-        my_room_graph[new_rmid][inv_direction(direction)] = rmid
-    else:
-        my_room_graph[new_rmid] = player.current_room.get_exits()
-        my_room_graph[new_rmid][inv_direction(direction)] = rmid
-    time.sleep(0.5)
+while len(stack)>0:
+    current = stack.pop()
+    nbrs = current.get_exits()
+    print(nbrs)
+    for i in nbrs
+    for i in nbrs:
+        if i in seen:
+            pass
+        else:
+            stack.append(current.get_room_in_direction(i))
+            seen[current.id] = 
 
 
 
 
-#`player.current_room.id`, `player.current_room.get_exits()` and `player.travel(direction)
-
-
-
-# extension
-# Keep a stack of "rooms with ?s" + a dictionary to get from here to that previous room
-# so as you travel you "leave behind" a trail.
 
 # TRAVERSAL TEST
 visited_rooms = set()
